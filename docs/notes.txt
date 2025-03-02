@@ -1,0 +1,523 @@
+Project Title: Central Resource Dashboard for Police Communication & IT (CRD)
+
+Project Type: Web-based Resource Management & Reporting System
+
+Technology Stack: PHP, MySQL, HTML, CSS, JavaScript, cPanel-hosted, GitHub for version control
+Project Overview
+
+The Central Resource Dashboard (CRD) is a web-based system designed for the Maharashtra State Police to track and manage communication equipment, personnel, and reports. It features:
+
+    Role-Based Access Control (RBAC) with a hierarchical approval system.
+    Equipment & Personnel Management with cross-verification from License, Store, and Establishment branches.
+    Report Generation System with e-signature verification via OTP before forwarding reports to higher authorities.
+    Logging & Auditing System that records logins, data entries, and approvals, accessible only to admins.
+
+Users & Their Roles
+
+The system caters to multiple user levels with different access privileges:
+
+1️⃣ End Users (Unit-Level Data Entry Personnel) → Can enter equipment & personnel data but cannot edit it after submission.
+2️⃣ Moderators (Level 1-4: Unit → HQ Moderators) → Can verify & approve data submitted by unit-level users.
+3️⃣ Specialized Branches (License, Store & Establishment Branches) → Cross-check data with hard copies, make corrections (if necessary), and finalize records (which then cannot be edited further).
+4️⃣ System Administrators → Have full control, including user management, logs access, and system configuration.
+Core Features & Functionalities
+1️⃣ Authentication & Security
+
+✅ Sevarth ID & Password Login (Government employee login system).
+✅ OTP-based Verification for sensitive actions like report approvals.
+✅ 90-day Secure Persistent Login with token-based authentication.
+✅ Session Management (Admins can view & terminate sessions remotely).
+2️⃣ Equipment & Personnel Management
+
+✅ Equipment Tracking (CRUD operations for radios, handheld devices, repeaters, etc.).
+✅ Personnel Records (Sevarth ID, posting history, hierarchical relationships).
+✅ Data Entry Restrictions: Once unit users submit data, they cannot edit it further.
+3️⃣ Cross-Verification Process
+
+✅ Verification Teams Use Hard Copies to check data.
+✅ Either Approve Directly or Edit & Approve, after which no further edits are allowed.
+✅ Three Cross-Verification Tables:
+
+    Equipment Verification → Ensures entered data matches physical records.
+    Personnel Verification → Confirms employee details & posting accuracy.
+    License Verification → Cross-checks license data against legal records.
+
+4️⃣ Report Generation & Approval System
+
+✅ PDF Reports with Digital Signature Verification via OTP.
+✅ Reports are Automatically Forwarded to Higher-Level Moderators for Review.
+✅ Only Approved Reports are Finalized & Stored in the System.
+5️⃣ Logging & Auditing System (Admin-Only Access)
+
+✅ Tracks Logins, Data Entries, Report Approvals & Rejections.
+✅ Ensures Accountability & System Security.
+6️⃣ Deployment & Hosting
+
+✅ Hosted on cPanel, with:
+
+    Remote MySQL Database (Connected to Local Development Machines).
+    GitHub Integration for version control & deployment management.
+    ✅ GitHub Codespaces & Collaboration:
+    Codespaces is used for development, but each developer needs Live Share for real-time collaboration.
+    Multiple developers cannot access the same codespace persistently.
+
+System Architecture & Design
+
+📌 System Architecture (Three-Tier Model):
+
+    Client Layer → Web UI (HTML, CSS, JS).
+    Application Layer → PHP-based backend for authentication, data processing, and reporting.
+    Data Layer → MySQL database with structured tables for users, equipment, verification logs, and reports.
+
+📌 Database Schema Includes:
+
+    Logging System (Tracks all actions in the system).
+    Verification Tables (Finalized Data Cannot Be Edited Again).
+    Reports Table (Supports E-Signature & OTP Verification Before Submission).
+
+📌 Diagrams Created for the Project:
+
+    System Architecture Diagram
+    Database Schema (ERD)
+    User Flow Diagram
+    Use Case Diagram
+    Deployment Diagram
+    Data Flow Diagram (DFD)
+
+Development & Implementation Plan
+
+✅ Phase 1: Authentication & User Management (Week 1-2)
+
+    Set up Login, OTP System, Session Handling.
+    Implement Role-Based Access Control (RBAC).
+
+✅ Phase 2: Dashboard & Navigation Setup (Week 3)
+
+    Create dynamic dashboards based on user roles.
+    Implement navigation structure.
+
+✅ Phase 3: Equipment & Personnel Management (Week 4-5)
+
+    Build CRUD operations.
+    Implement data entry restrictions.
+
+✅ Phase 4: Verification Workflow (Week 6-7)
+
+    Cross-verification process implementation.
+    Locking records after final approval.
+
+✅ Phase 5: Report Generation & E-Signature (Week 8-9)
+
+    OTP-based e-signature verification.
+    Automated report forwarding.
+
+✅ Phase 6: Logging System & Deployment (Week 10-11)
+
+    Track all user actions.
+    Deploy on cPanel with GitHub integration.
+
+Special Considerations & Challenges
+
+❗ Remote MySQL Connection to cPanel:
+
+    Whitelist IPs or use % wildcard in Remote MySQL settings.
+    Possible SSL/TLS Issues (Handled via --ssl=0 if required).
+
+❗ GitHub Codespaces Limitations:
+
+    Only one developer can own a codespace.
+    Live Share is required for real-time collaboration.
+
+❗ Data Security & Access Restrictions:
+
+    Unit Users Cannot Edit Data After Submission.
+    Finalized Data in Verification Process Cannot Be Altered.
+
+❗ Persistent Login Security Risks & Mitigation:
+
+    Token-based authentication with secure cookies & session expiration.
+
+Final Summary
+
+The Central Resource Dashboard (CRD) is a secure, role-based web system designed for police personnel management, equipment tracking, and verified report generation.
+
+It features OTP-secured authentication, automated report forwarding, logging for accountability, and a strict cross-verification process to ensure accuracy & security in police resource management.
+
+The system is being developed in PHP & MySQL, hosted on cPanel, and managed via GitHub. It follows a structured development workflow, ensuring secure access, automated processes, and hierarchical approval systems for an efficient and tamper-proof police resource database. 🚀
+
+
+
+
+
+
+
+
+
+@startuml Central Resource Dashboard - Updated ERD
+
+' Entity definitions
+entity "equipment" as equipment {
+  *uid : INT <<PK>>
+  *pw_no_year : VARCHAR(50)
+  *serial_number : VARCHAR(100)
+  *make : VARCHAR(100)
+  *model : VARCHAR(100)
+  *modulation_type : ENUM('Digital', 'Analog', 'Trunking')
+  *freq_band : ENUM('UHF', 'VHF', '400', '800')
+  *equipment_type : ENUM('Radio Set', 'Handheld', 'Repeater')
+  *status : ENUM('Pending Verification', 'Verified', 'Rejected')
+  *deployment_id : INT <<FK>>
+  *unit_id : INT <<FK>>
+  created_by : INT <<FK>>  ' User who entered the data
+  locked : BOOLEAN DEFAULT FALSE  ' Prevents further edits
+  dl_unit : VARCHAR(100)
+  dl_date : DATE
+  dl_ref_number : VARCHAR(50)
+  iv_unit : VARCHAR(100)
+  iv_ref_no : VARCHAR(50)
+  iv_date : DATE
+  purchase_date : DATE
+  purchase_ref_no : VARCHAR(50)
+}
+
+entity "equipment_status" as status {
+  *id : INT <<PK>>
+  *name : ENUM('Working', 'Non-working', 'Theft', 'Damage')
+}
+
+entity "employee" as employee {
+  *uid : INT <<PK>>
+  *sevarth_id : VARCHAR(50)
+  *first_name : VARCHAR(50)
+  *last_name : VARCHAR(50)
+  father_name : VARCHAR(100)
+  mother_name : VARCHAR(100)
+  spouse_name : VARCHAR(100)
+  *dob : DATE
+  *mobile_number : VARCHAR(15)
+  *email_id : VARCHAR(100)
+  aadhar_number : VARCHAR(20)
+  *retirement_date : DATE
+  *current_posting : INT <<FK>>
+  *login_user_role : INT <<FK>>
+  *reporting_person : INT <<FK>>
+}
+
+entity "posting" as posting {
+  *uid : INT <<PK>>
+  *sevarth_id : VARCHAR(50) <<FK>>
+  *posting_unit : INT <<FK>>
+  *joining_unit_date : DATE
+  relieve_unit_date : DATE
+  *post : INT <<FK>>
+  *sub_post : INT <<FK>>
+}
+
+entity "post_types" as post_types {
+  *id : INT <<PK>>
+  *name : VARCHAR(50)
+  priority : INT
+}
+
+entity "sub_post_types" as sub_post_types {
+  *id : INT <<PK>>
+  *name : VARCHAR(50)
+  description : TEXT
+}
+
+entity "unit" as unit {
+  *unit_id : INT <<PK>>
+  *unit_name : VARCHAR(100)
+  unit_latitude : DECIMAL(10,8)
+  unit_longitude : DECIMAL(11,8)
+  unit_photo : VARCHAR(255)
+  unit_description : TEXT
+  *unit_incharge : INT <<FK>>
+  sp : INT <<FK>>
+  dysp : INT <<FK>>
+  pi : INT <<FK>>
+  psi : INT <<FK>>
+}
+
+entity "deployment" as deployment {
+  *deployment_id : INT <<PK>>
+  *name : VARCHAR(100)
+  *deployment_type_id : INT <<FK>>
+  height_of_mast : DECIMAL(10,2)
+  type_of_mast : ENUM('SSM', 'Lattice')
+}
+
+entity "deployment_types" as deployment_types {
+  *id : INT <<PK>>
+  *name : VARCHAR(100)
+  *description : TEXT
+}
+
+entity "user_roles" as user_roles {
+  *id : INT <<PK>>
+  *role_name : VARCHAR(50)
+  access_level : INT
+}
+
+entity "logs" as logs {
+  *id : INT <<PK>>
+  *user_id : INT <<FK>>
+  *action_type : ENUM('Login', 'Data Entry', 'Report Generation', 'Approval')
+  *timestamp : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  ip_address : VARCHAR(45)
+  user_agent : TEXT
+}
+
+entity "reports" as reports {
+  *id : INT <<PK>>
+  *generated_by : INT <<FK>>
+  *generated_date : DATE
+  *report_file_path : VARCHAR(255)
+  *is_signed : BOOLEAN DEFAULT FALSE
+  *otp_verified : BOOLEAN DEFAULT FALSE
+  *sent_to_moderator : INT <<FK>>
+  *sent_date : DATE
+}
+
+' Verification Tables with Finalization
+entity "equipment_verification" as eq_verify {
+  *id : INT <<PK>>
+  *equipment_id : INT <<FK>>
+  *verified_by : INT <<FK>>
+  *status : ENUM('Verified', 'Pending', 'Mismatch')
+  *finalized : BOOLEAN DEFAULT FALSE  ' Once true, no further edits
+  *verification_date : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "personnel_verification" as pers_verify {
+  *id : INT <<PK>>
+  *employee_id : INT <<FK>>
+  *verified_by : INT <<FK>>
+  *status : ENUM('Verified', 'Pending', 'Mismatch')
+  *finalized : BOOLEAN DEFAULT FALSE
+  *verification_date : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "license_verification" as lic_verify {
+  *id : INT <<PK>>
+  *equipment_id : INT <<FK>>
+  *verified_by : INT <<FK>>
+  *status : ENUM('Verified', 'Pending', 'Mismatch')
+  *finalized : BOOLEAN DEFAULT FALSE
+  *verification_date : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+' Relationships
+equipment }|--|| status : has_status
+equipment }|--|| deployment : has_deployment
+equipment }|--|| unit : belongs_to_unit
+
+employee }|--o| employee : reports_to
+employee }|--|| posting : current_posting
+employee }|--|| user_roles : has_role
+
+posting }|--|| employee : for_employee
+posting }|--|| unit : at_unit
+posting }|--|| post_types : has_post
+posting }|--|| sub_post_types : has_sub_post
+
+unit }|--o| employee : incharge
+unit }|--o| employee : sp
+unit }|--o| employee : dysp
+unit }|--o| employee : pi
+unit }|--o| employee : psi
+
+deployment }|--|| deployment_types : has_type
+
+logs }|--|| employee : belongs_to
+reports }|--|| employee : generated_by
+reports }|--|| employee : sent_to_moderator
+reports }|--|| logs : logs_action
+
+eq_verify }|--|| employee : verified_by
+eq_verify }|--|| equipment : verifies
+
+pers_verify }|--|| employee : verified_by
+pers_verify }|--|| employee : verifies
+
+lic_verify }|--|| employee : verified_by
+lic_verify }|--|| equipment : verifies
+
+@enduml
+
+
+
+flowchart TD
+    %% Client Devices
+    Client1[Desktop Computer]
+    Client2[Laptop]
+    Client3[Tablet]
+    Client4[Mobile Phone]
+
+    %% Network
+    Internet((Internet))
+
+    Client1 & Client2 & Client3 & Client4 -->|HTTPS| Internet
+
+    %% Web Server
+    Internet -->|HTTPS| WebServer[Web Server\nApache]
+
+    %% cPanel Hosting Environment
+    subgraph cPanel[cPanel Hosting Environment]
+        WebServer -->|PHP 8.x| AppServer[Application Server]
+        AppServer -->|SQL Queries| DBServer[(MySQL Database)]
+
+        AppServer -->|File System| FileStorage[File Storage\nPDF Reports, Images]
+        AppServer -->|Session Data| SessionCache[Session Cache]
+
+        %% Application Components
+        subgraph AppComponents[Application Components]
+            AuthModule[Authentication Module]
+            EquipModule[Equipment Module]
+            PersonnelModule[Personnel Module]
+            UnitModule[Unit Module]
+            ReportModule[Reporting Module]
+            AdminModule[Admin Module]
+        end
+
+        AppServer --- AppComponents
+    end
+
+    %% External Services
+    AppServer -->|API Calls| OTP[OTP Service]
+    AppServer -->|API Calls| DigSig[Digital Signature Service]
+
+    %% Report Processing Flow
+    ReportModule -->|Generate Report| FileStorage
+    ReportModule -->|Apply E-Signature| DigSig
+    DigSig -->|Verify via OTP| OTP
+    OTP -->|Confirm & Store Signed Report| FileStorage
+    ReportModule -->|Send Signed Report to Higher-Level Moderator| AppServer
+
+    %% Logging & Auditing (Merged)
+    AppServer -->|Log Actions| LogSystem[Logging & Auditing System]
+    LogSystem -->|Store Logs| DBServer
+    Admin -->|View Logs| LogSystem
+
+    %% Backup System
+    DBServer -.->|Daily Backup| Backup[Backup Storage]
+
+
+
+flowchart TD
+    %% Actors
+    EndUser([End User\nData Entry Personnel])
+    Mod1([Level 1 Moderator\nUnit Level])
+    Mod2([Level 2 Moderator\nDistrict Level])
+    Mod3([Level 3 Moderator\nRegion Level])
+    Mod4([Level 4 Moderator\nHQ Level])
+    License([License Branch])
+    Store([Store Branch])
+    Estab([Establishment Branch])
+    Admin([System Administrator])
+
+    %% Authentication
+    EndUser --> Login[Login with Sevarth ID]
+    Mod1 --> Login
+    Mod2 --> Login
+    Mod3 --> Login
+    Mod4 --> Login
+    License --> Login
+    Store --> Login
+    Estab --> Login
+    Admin --> Login
+
+    %% Equipment & Personnel Management
+    EndUser --> ManageEquip[Manage Equipment]
+    EndUser --> ManagePers[Manage Personnel]
+    EndUser --> ManageUnit[Manage Units]
+
+    Mod1 --> ManageEquip
+    Mod1 --> ManagePers
+    Mod1 --> ManageUnit
+
+    %% Report Generation & Submission
+    EndUser --> GenReport[Generate Reports]
+    Mod1 --> GenReport
+
+    GenReport -->|Needs E-Sign| ApplyESign[Apply E-Signature]
+    ApplyESign -->|OTP Required| VerifyOTP[Verify OTP]
+    VerifyOTP -->|Confirm & Approve| SubmitReport[Submit Report]
+
+    SubmitReport --> ApproveReports[Forward Reports to Next Level]
+    ApproveReports --> Mod2
+    ApproveReports --> Mod3
+    ApproveReports --> Mod4
+
+    %% Verification Processes
+    Mod1 --> VerifyEquip[Verify Equipment]
+    Mod1 --> VerifyPers[Verify Personnel]
+
+    Mod2 --> VerifyEquip
+    Mod2 --> VerifyPers
+
+    Mod3 --> VerifyEquip
+    Mod3 --> VerifyPers
+
+    Mod4 --> VerifyEquip
+    Mod4 --> VerifyPers
+
+    License --> VerifyEquip
+    Store --> VerifyEquip
+    Estab --> VerifyPers
+
+    %% Administrative Functions
+    Admin --> ManageUsers[Manage Users]
+    Admin --> ConfigSystem[Configure System]
+    Admin --> ViewAudit[View Audit Logs]
+
+
+
+flowchart TD
+    %% Level 0 Context Diagram
+    User([User]) -->|Input Data| System{Central Resource Dashboard}
+    System -->|Output Data| User
+    System <-->|Store/Retrieve Data| DB[(Database)]
+
+    %% Level 1 Diagram
+    subgraph Level 1 DFD
+        User1([End User]) -->|Login| Auth[1.0\nAuthentication]
+        User2([Moderator]) -->|Login| Auth
+        User3([Branch Officer]) -->|Login| Auth
+        User4([Admin]) -->|Login| Auth
+
+        Auth -->|Verify Credentials| UserDB[(User Records)]
+        Auth -->|Grant Access| Dashboard[2.0\nDashboard]
+
+        Dashboard -->|Access Equipment| EquipMgmt[3.0\nEquipment Management]
+        Dashboard -->|Access Personnel| PersnnelMgmt[4.0\nPersonnel Management]
+        Dashboard -->|Access Units| UnitMgmt[5.0\nUnit Management]
+        Dashboard -->|Generate Reports| Reports[6.0\nReporting System]
+
+        EquipMgmt <-->|CRUD Operations| EquipDB[(Equipment Records)]
+        PersnnelMgmt <-->|CRUD Operations| PersonnelDB[(Personnel Records)]
+        UnitMgmt <-->|CRUD Operations| UnitDB[(Unit Records)]
+
+        Reports -->|Fetch Data| EquipDB
+        Reports -->|Fetch Data| PersonnelDB
+        Reports -->|Fetch Data| UnitDB
+        Reports -->|Generate PDF| PDFGen[7.0\nPDF Generation Service]
+
+        PDFGen -->|Apply E-Signature| ESign[8.0\nE-Signature System]
+        ESign -->|Verify via OTP| OTPService[9.0\nOTP Verification]
+        OTPService -->|Confirm Sign| ReportDB[(Report Records)]
+        ReportDB -->|Send Signed Report to Next-Level Moderator| ReportRouting[10.0\nReport Routing System]
+
+        ReportRouting -->|Store & Notify Higher-Level Moderator| Notification[11.0\nNotification System]
+
+        Notification -->|Send Email| User1
+        Notification -->|Send Email| User2
+        Notification -->|Send Email| User3
+        Notification -->|Send Email| User4
+
+        %% Logging System
+        EquipMgmt -->|Log Actions| AuditLog[(Logging & Auditing System)]
+        PersnnelMgmt -->|Log Actions| AuditLog
+        Reports -->|Log Actions| AuditLog
+        Auth -->|Log User Login| AuditLog
+    end

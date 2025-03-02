@@ -1,0 +1,83 @@
+/crd/
+├── .github/                   # GitHub related files
+│   └── workflows/             # CI/CD workflows
+├── app/                       # Core application code
+│   ├── config/                # Configuration files
+│   │   ├── database.php       # Database connection settings
+│   │   └── config.php         # App configuration constants
+│   ├── controllers/           # Controller classes
+│   │   ├── AuthController.php
+│   │   ├── EquipmentController.php
+│   │   ├── PersonnelController.php
+│   │   ├── UnitController.php
+│   │   ├── ReportController.php
+│   │   ├── VerificationController.php
+│   │   └── AdminController.php
+│   ├── models/                # Model classes for database interactions
+│   │   ├── User.php
+│   │   ├── Equipment.php
+│   │   ├── Employee.php
+│   │   ├── Unit.php
+│   │   ├── Report.php
+│   │   ├── Verification.php
+│   │   └── Log.php
+│   ├── helpers/               # Helper functions
+│   │   ├── auth_helper.php
+│   │   ├── otp_helper.php
+│   │   ├── file_helper.php
+│   │   └── pdf_helper.php
+│   ├── services/              # Service classes
+│   │   ├── OTPService.php
+│   │   ├── SignatureService.php
+│   │   ├── NotificationService.php
+│   │   └── LoggingService.php
+│   └── utils/                 # Utility functions
+│       ├── Validator.php
+│       └── Session.php
+├── docs/                      # Documentation
+│   ├── diagrams/              # Project diagrams
+│   │   ├── erd.puml           # Entity Relationship Diagram
+│   │   ├── deployment.png     # Deployment Diagram
+│   │   ├── dfd.png            # Data Flow Diagram
+│   │   └── user_flow.png      # User Flow Diagram
+│   └── schema/                # Database schema files
+│       └── crd_schema.sql     # Database schema file
+├── public/                    # Publicly accessible files
+│   ├── index.php              # Main entry point
+│   ├── css/                   # CSS files
+│   │   ├── main.css
+│   │   └── dashboard.css
+│   ├── js/                    # JavaScript files
+│   │   ├── main.js
+│   │   ├── auth.js
+│   │   ├── equipment.js
+│   │   └── reports.js
+│   ├── images/                # Image assets
+│   └── uploads/               # User uploads (restricted access)
+│       ├── reports/           # Generated reports
+│       └── signatures/        # Signature files
+├── resources/                 # Non-public resources
+│   ├── templates/             # HTML templates
+│   │   ├── dashboard/
+│   │   ├── equipment/
+│   │   ├── personnel/
+│   │   ├── reports/
+│   │   ├── verification/
+│   │   └── admin/
+│   └── views/                 # View files
+│       ├── layouts/
+│       │   ├── main.php
+│       │   └── dashboard.php
+│       ├── auth/
+│       ├── equipment/
+│       ├── personnel/
+│       ├── reports/
+│       └── admin/
+├── tests/                     # Test files
+│   ├── unit/
+│   └── integration/
+├── vendor/                    # Third-party libraries (via Composer)
+├── .gitignore                 # Git ignore file
+├── composer.json              # Composer package file
+├── README.md                  # Project documentation
+└── .htaccess                  # Apache configuration
