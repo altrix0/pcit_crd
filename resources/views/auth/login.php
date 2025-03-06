@@ -4,7 +4,7 @@ session_start();
 
 // Include required files
 require_once __DIR__ . '/../../../src/config/database.php';
-require_once __DIR__ . '/../../../src/models/User.php';
+require_once __DIR__ . '../admin/users.php';
 require_once __DIR__ . '/../../../src/services/OTPService.php';
 require_once __DIR__ . '/../../../src/services/LoggingService.php';
 require_once __DIR__ . '/../../../src/helpers/auth_helper.php';
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           
           <div class="d-grid">
-            <button type="submit" class="btn btn-success">LOGIN TO ACCOUNT</button>
+            <button type="submit" class="btn btn-custom">LOGIN TO ACCOUNT</button>
           </div>
           
           <div class="link-container mt-3 d-flex justify-content-between">

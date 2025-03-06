@@ -1,18 +1,16 @@
 /*login.css*/
 body {
-    background-image: url('background.jpg');
-    background-size: cover;
-    background-position: center;
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f5f5f5;
 }
 
 .card {
     max-width: 350px;
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.50);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container {
@@ -25,14 +23,16 @@ body {
     height: auto;
 }
 
-.btn-success {
+.btn-custom {
     background-color: #180453;
     border-color: #180453;
+    color: #ffffff;
 }
 
-.btn-success:hover {
+.btn-custom:hover {
 background-color: #3d2874; 
 border-color: #3d2874; 
+color: #ffffff;
 }
 
 .link-container {
