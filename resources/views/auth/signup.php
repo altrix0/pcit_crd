@@ -1,5 +1,5 @@
 <?php
-include '../config/db.php';
+require_once '../src/config/database.php';
 $message = '';
 $message_type = '';
 $retirement_date = '';

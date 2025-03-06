@@ -3,7 +3,7 @@
 session_start();
 
 // Include required files (adjust paths as needed)
-require_once '../app/config/database.php';
+require_once '../src/config/database.php';
 require_once '../app/models/User.php';
 require_once '../app/services/OTPService.php';
 require_once '../app/services/LoggingService.php';
