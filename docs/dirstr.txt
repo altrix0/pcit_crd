@@ -1,0 +1,107 @@
+PCIT_CRD - Police Communication & IT Central Resource Dashboard
+===============================================================
+
+Directory Structure:
+
+pcit_crd/
+├── .github/                   # GitHub related files
+│   └── workflows/             # CI/CD workflows
+│
+├── src/                       # Core application code
+│   ├── config/                # Configuration files
+│   │   ├── database.php       # Database connection settings
+│   │   └── config.php         # App configuration constants
+│   │
+│   ├── controllers/           # Controller classes
+│   │   ├── AuthController.php # Authentication controller
+│   │   ├── EquipmentController.php
+│   │   ├── PersonnelController.php
+│   │   ├── UnitController.php
+│   │   ├── ReportController.php
+│   │   ├── VerificationController.php
+│   │   └── AdminController.php
+│   │
+│   ├── models/                # Model classes for database interactions
+│   │   ├── User.php           # User authentication and management
+│   │   ├── Equipment.php      # Equipment management
+│   │   ├── Employee.php       # Employee data management
+│   │   ├── Unit.php           # Police unit management
+│   │   ├── Report.php         # Report generation models
+│   │   ├── Verification.php   # Verification models
+│   │   └── Log.php            # System logging
+│   │
+│   ├── helpers/               # Helper functions
+│   │   ├── auth_helper.php    # Authentication helper functions
+│   │   ├── otp_helper.php     # OTP helper functions
+│   │   ├── file_helper.php    # File management helpers
+│   │   └── pdf_helper.php     # PDF generation helpers
+│   │
+│   ├── services/              # Service classes
+│   │   ├── OTPService.php     # OTP generation and validation
+│   │   ├── SignatureService.php
+│   │   ├── NotificationService.php
+│   │   └── LoggingService.php # System activity logging
+│   │
+│   └── utils/                 # Utility functions
+│       ├── Validator.php      # Input validation
+│       └── Session.php        # Session management
+│
+├── resources/                 # Non-public resources
+│   ├── templates/             # HTML templates
+│   │   ├── dashboard/
+│   │   ├── equipment/
+│   │   ├── personnel/
+│   │   ├── reports/
+│   │   ├── verification/
+│   │   └── admin/
+│   │
+│   └── views/                 # View files
+│       ├── layouts/
+│       │   ├── main.php
+│       │   └── dashboard.php
+│       ├── auth/
+│       ├── equipment/
+│       ├── personnel/
+│       ├── reports/
+│       └── admin/
+│
+├── public/                    # Publicly accessible files
+│   ├── index.php              # Main entry point
+│   ├── css/                   # CSS files
+│   │   ├── main.css
+│   │   └── dashboard.css
+│   │
+│   ├── js/                    # JavaScript files
+│   │   ├── main.js
+│   │   ├── auth.js
+│   │   ├── equipment.js
+│   │   └── reports.js
+│   │
+│   ├── images/                # Image assets
+│   │
+│   └── uploads/               # User uploads (restricted access)
+│         ├── reports/           # Generated reports
+│         └── signatures/        # Signature files
+│   
+│
+├── docs/                      # Documentation
+│   ├── diagrams/              # Project diagrams
+│   │   ├── ERD.puml           # Entity Relationship Diagram
+│   │   ├── DeploymentPCIT(1).drawio
+│   │   ├── DFDPCIT(1).drawio
+│   │   ├── SysArchPCIT.drawio
+│   │   └── UCDPCIT(1).drawio
+│   │
+│   ├── info/                  # Additional information
+│   ├── dirstr.txt             # This directory structure file
+│   └── notes.txt              # Project notes
+│
+├── tests/                     # Test files
+│   ├── unit/                  # Unit tests
+│   └── integration/           # Integration tests
+│
+├── vendor/                    # Third-party libraries (via Composer)
+├── .gitignore                 # Git ignore file
+├── .htaccess                  # Main Apache configuration
+├── composer.json              # Composer package file
+└── README.md                  # Project documentation

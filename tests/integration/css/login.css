@@ -1,0 +1,46 @@
+/*login.css*/
+body {
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    max-width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.50);
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.logo {
+    width: 70px;
+    height: auto;
+}
+
+.btn-success {
+    background-color: #180453;
+    border-color: #180453;
+}
+
+.btn-success:hover {
+background-color: #3d2874; 
+border-color: #3d2874; 
+}
+
+.link-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.link-container a {
+    text-decoration: none;
+}
