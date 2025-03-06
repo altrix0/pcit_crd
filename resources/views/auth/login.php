@@ -4,7 +4,7 @@ session_start();
 
 // Include required files
 require_once __DIR__ . '/../../../src/config/database.php';
-require_once __DIR__ . '../admin/users.php';
+require_once __DIR__ . '../../admin/users.php';
 require_once __DIR__ . '/../../../src/services/OTPService.php';
 require_once __DIR__ . '/../../../src/services/LoggingService.php';
 require_once __DIR__ . '/../../../src/helpers/auth_helper.php';
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - CRD</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/login.css">
+  <link rel="stylesheet" href="../../../public/css/login.css">
 </head>
 <body>
   <div class="container">
