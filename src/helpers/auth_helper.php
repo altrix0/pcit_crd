@@ -248,7 +248,7 @@ function verify_csrf_token($token) {
  * Get current user data from session
  * @return array|null User data or null if not logged in
  */
-function get_current_user() {
+function get_logged_in_user() {
     if (!isUserLoggedIn()) {
         return null;
     }

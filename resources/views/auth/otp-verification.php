@@ -3,12 +3,12 @@
 session_start();
 
 // Include required files (adjust paths as needed)
-require_once '../app/config/database.php';
-require_once '../app/models/User.php';
-require_once '../app/services/OTPService.php';
-require_once '../app/services/LoggingService.php';
-require_once '../app/helpers/auth_helper.php';
-require_once '../app/controllers/AuthController.php';
+require_once __DIR__ . '/../../../src/config/database.php';
+require_once __DIR__ . '../admin/users.php';
+require_once __DIR__ . '/../../../src/services/OTPService.php';
+require_once __DIR__ . '/../../../src/services/LoggingService.php';
+require_once __DIR__ . '/../../../src/helpers/auth_helper.php';
+require_once __DIR__ . '/../../../src/controllers/AuthController.php';
 
 // Initialize the authentication controller
 $authController = new AuthController();
