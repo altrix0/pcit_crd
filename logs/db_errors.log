@@ -70,3 +70,9 @@
 [2025-03-06 17:27:16] SQLSTATE[HY000] [1045] Access denied for user ''@'localhost' (using password: NO)
 [2025-03-06 17:30:58] SQLSTATE[HY000] [1045] Access denied for user ''@'localhost' (using password: NO)
 [2025-03-06 17:30:58] SQLSTATE[HY000] [1045] Access denied for user ''@'localhost' (using password: NO)
+[2025-03-07 15:01:03] SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-03-07 15:01:07] SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-03-07 15:01:07] SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-03-07 15:01:08] SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-03-07 15:01:11] SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2025-03-07 15:01:12] SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it

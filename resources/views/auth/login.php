@@ -4,7 +4,7 @@ session_start();
 
 // Include required files
 require_once __DIR__ . '/../../../src/config/database.php';
-require_once __DIR__ . '../../admin/users.php';
+require_once __DIR__ . '/../../../src/models/User.php';
 require_once __DIR__ . '/../../../src/services/OTPService.php';
 require_once __DIR__ . '/../../../src/services/LoggingService.php';
 require_once __DIR__ . '/../../../src/helpers/auth_helper.php';

@@ -1,4 +1,11 @@
 <?php
+require_once __DIR__ . '/../../../src/config/database.php';
+require_once __DIR__ . '/../../../src/models/User.php';
+require_once __DIR__ . '/../../../src/services/OTPService.php';
+require_once __DIR__ . '/../../../src/services/LoggingService.php';
+require_once __DIR__ . '/../../../src/helpers/auth_helper.php';
+require_once __DIR__ . '/../../../src/controllers/AuthController.php';
+
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -6,7 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check if user is logged in, redirect to login page if not
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /login.php");
+    header("Location: ../../auth/login.php");
     exit();
 }
 
@@ -23,7 +30,7 @@ $role = isset($user['role']) ? $user['role'] : 'User';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - CRD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/dashboard.css"> <!-- Linking external CSS -->
+    <link rel="stylesheet" href="../../../public/css/dashboard.css">>
 </head>
 <body>
 

@@ -1,5 +1,10 @@
 <?php
 require_once __DIR__ . '/../../../src/config/database.php';
+require_once __DIR__ . '/../../../src/models/User.php';
+require_once __DIR__ . '/../../../src/services/OTPService.php';
+require_once __DIR__ . '/../../../src/services/LoggingService.php';
+require_once __DIR__ . '/../../../src/helpers/auth_helper.php';
+require_once __DIR__ . '/../../../src/controllers/AuthController.php';
 $message = '';
 $message_type = '';
 $retirement_date = '';
