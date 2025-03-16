@@ -1,36 +1,37 @@
 /*Dashboard CSS*/
+
 /* Top Navigation Bar */
 .navbar {
     background-color: #180453;
     padding: 12px 20px;
+    z-index: 1030; /* Ensure it appears above other elements */
 }
 
-/* Sidebar */
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    background-color: #1f1b3a;
-    padding-top: 20px;
-    position: fixed;
-    top: 56px;
-    /* Matches navbar height */
-    left: 0;
-}
-
-.sidebar .nav-link {
+/* Adjust Navbar Links */
+.navbar-nav .nav-link {
     color: #ffffff;
-    padding: 10px 20px;
-    display: block;
+    padding: 10px 15px;
 }
 
-.sidebar .nav-link:hover {
+.navbar-nav .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Main Content */
 .content {
-    margin-left: 250px;
-    /* Adjust for sidebar width */
-    width: calc(100% - 250px);
+    margin-top: 70px; /* Adjust for fixed navbar height */
+    width: 100%;
     padding: 20px;
+}
+
+.btn-custom {
+    background-color: #180453;
+    border-color: #180453;
+    color: #ffffff;
+}
+
+.btn-custom:hover {
+background-color: #3d2874; 
+border-color: #3d2874; 
+color: #ffffff;
 }
