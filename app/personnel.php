@@ -160,8 +160,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $show_form) {
     <h2 class="mb-4">Personnel Management</h2>
     
     <?php if ($show_form): ?>
-    <fieldset class="border p-3 rounded mb-3">
-    <legend class="w-auto">Personal Information</legend>
     <form action="dashboard.php?page=personnel" method="POST" class="needs-validation" id="personnelForm" novalidate>
         <div class="row">
             <!-- Personnel Info -->
@@ -241,56 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $show_form) {
                 <input type="hidden" name="reporting_person" value="<?php echo htmlspecialchars($reporting_person); ?>" />
             </div>
         </div>
-    </fieldset>
 
-    <!-- Posting Unit Section -->
-    <fieldset class="border p-3 rounded mb-3">
-        <legend class="w-auto">Posting Unit</legend>
-        <div class="row">
-            <!-- Posting Unit Name - Set automatically from user's unit -->
-            <div class="col-md-4 mb-3">
-                <label for="posting_unit" class="form-label">Posting Unit Name</label>
-                <input type="text" class="form-control" id="posting_unit" name="posting_unit" value="<?php echo htmlspecialchars($user_unit['unit_name']); ?>" readonly />
-            </div>
-
-            <!-- Joining Unit Date -->
-            <div class="col-md-4 mb-3">
-                <label for="joining_unit_date" class="form-label">Joining Unit Date</label>
-                <input type="date" class="form-control" id="joining_unit_date" name="joining_unit_date" required>
-                <div class="invalid-feedback">Please select a joining date.</div>
-            </div>
-
-            <!-- Relieve Unit Date -->
-            <div class="col-md-4 mb-3">
-                <label for="relieve_unit_date" class="form-label">Relieve Unit Date</label>
-                <input type="date" class="form-control" id="relieve_unit_date" name="relieve_unit_date">
-                <div class="invalid-feedback">Relieve date must be after joining date.</div>
-            </div>
-
-            <!-- Post - Posts where post_type = 'post' -->
-            <div class="col-md-4 mb-3">
-                <label for="post" class="form-label">Post</label>
-                <select class="form-select" id="post" name="post" required>
-                    <option value="">Select Post</option>
-                    <?php foreach ($posts as $post): ?>
-                    <option value="<?php echo $post['post_id']; ?>"><?php echo htmlspecialchars($post['name']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <div class="invalid-feedback">Please select a post.</div>
-            </div>
-
-            <!-- Sub-Post - Posts where post_type = 'subpost' -->
-            <div class="col-md-4 mb-3">
-                <label for="sub_post" class="form-label">Sub-Post</label>
-                <select class="form-select" id="sub_post" name="sub_post">
-                    <option value="">Select Sub-Post</option>
-                    <?php foreach ($sub_posts as $sub_post): ?>
-                    <option value="<?php echo $sub_post['sub_post_id']; ?>"><?php echo htmlspecialchars($sub_post['name']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
-    </fieldset>
 
     <!-- Submit Button -->
     <div class="mt-4">
@@ -346,27 +295,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $show_form) {
                 $(this).removeClass('is-valid').addClass('is-invalid');
             } else if (email) {
                 $(this).removeClass('is-invalid').addClass('is-valid');
-            }
-        });
-        
-        // Validate joining and relieving dates
-        $('#relieve_unit_date').on('change', function() {
-            const joiningDate = new Date($('#joining_unit_date').val());
-            const relieveDate = new Date($(this).val());
-            
-            if (!isNaN(joiningDate.getTime()) && !isNaN(relieveDate.getTime())) {
-                if (relieveDate < joiningDate) {
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid').addClass('is-valid');
-                }
-            }
-        });
-        
-        $('#joining_unit_date').on('change', function() {
-            const relieveDate = $('#relieve_unit_date').val();
-            if (relieveDate) {
-                $('#relieve_unit_date').trigger('change');
             }
         });
         

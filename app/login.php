@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Store minimal user info in session
                 $_SESSION['user_id'] = $user['employee_id'];
                 $_SESSION['sevarth_id'] = $user['sevarth_id'];
-                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['user_role'] = $user['login_user_role'];
                 
                 // Redirect to dashboard
                 header('Location: dashboard.php');

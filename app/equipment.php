@@ -261,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_equipment']) && 
 <div class="alert alert-warning">
     <h5>Unit Required</h5>
     <p>You must create a unit before adding equipment.</p>
-    <a href="dashboard.php?page=unit" class="btn btn-primary mt-2">Create Unit</a>
+    <a href="dashboard.php?page=unit" class="btn btn-custom mt-2">Create Unit</a>
 </div>
 <?php endif; ?>
 
