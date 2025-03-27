@@ -283,6 +283,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                             <input type="text" class="form-control" name="current_posting" placeholder="Current Posting" required value="<?php echo isset($_POST['current_posting']) ? htmlspecialchars($_POST['current_posting']) : ''; ?>">
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Mobile Number</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="mobile" id="mobile_number" placeholder="Mobile Number" required maxlength="10" pattern="[0-9]{10}" value="<?php echo isset($_POST['mobile']) ? htmlspecialchars($_POST['mobile']) : ''; ?>">
+                                <button type="submit" class="btn btn-outline-primary" name="send_otp" formnovalidate>Send OTP</button>
+                            </div>
+                            <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Enter OTP</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="otp" placeholder="Enter OTP" value="<?php echo isset($_POST['otp']) ? htmlspecialchars($_POST['otp']) : ''; ?>">
+                                <button type="submit" class="btn btn-outline-success" name="verify_otp" formnovalidate>Verify OTP</button>
+                            </div>
+                            <div id="otp-status" class="form-text">
+                                <?php if (isset($_SESSION['otp_verified']) && $_SESSION['otp_verified'] === true): ?>
+                                <span class="text-success">OTP Verified</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Role</label>
                             <select class="form-select" id="role" name="role" required>
                                 <option value="">Select Role</option>
@@ -303,14 +323,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                                     3 => 'Regional Level Moderators',
                                     2 => 'District Level Moderators',
                                 ];
-                                
+
                                 foreach ([4, 3, 2] as $level) {
                                     if (isset($grouped_employees[$level]) && !empty($grouped_employees[$level])) {
                                         echo '<optgroup label="' . $level_labels[$level] . '">';
                                         foreach ($grouped_employees[$level] as $employee) {
-                                            echo '<option value="' . $employee['id'] . '">' . 
-                                                 htmlspecialchars($employee['designation'] . ' - ' . $employee['department_location']) . 
-                                                 '</option>';
+                                            echo '<option value="' . $employee['id'] . '">' .
+                                                htmlspecialchars($employee['designation'] . ' - ' . $employee['department_location']) .
+                                                '</option>';
                                         }
                                         echo '</optgroup>';
                                     }
@@ -318,26 +338,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                                 ?>
                             </select>
                             <div class="invalid-feedback">Please select a reporting person</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Mobile Number</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="mobile" id="mobile_number" placeholder="Mobile Number" required maxlength="10" pattern="[0-9]{10}" value="<?php echo isset($_POST['mobile']) ? htmlspecialchars($_POST['mobile']) : ''; ?>">
-                                <button type="submit" class="btn btn-outline-primary" name="send_otp" formnovalidate>Send OTP</button>
-                            </div>
-                            <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Enter OTP</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="otp" placeholder="Enter OTP" value="<?php echo isset($_POST['otp']) ? htmlspecialchars($_POST['otp']) : ''; ?>">
-                                <button type="submit" class="btn btn-outline-success" name="verify_otp" formnovalidate>Verify OTP</button>
-                            </div>
-                            <div id="otp-status" class="form-text">
-                                <?php if (isset($_SESSION['otp_verified']) && $_SESSION['otp_verified'] === true): ?>
-                                <span class="text-success">OTP Verified</span>
-                                <?php endif; ?>
-                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Enter Password</label>

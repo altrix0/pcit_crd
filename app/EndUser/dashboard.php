@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 // Whitelist of allowed pages to prevent unauthorized file access
-$allowed_pages = ['home', 'reports', 'settings', 'equipment_choice', 'unit', 'personnel','posting', 'single_equipment_entry', 'bulk_field_selection', 'bulk_equipment_entry'];
+$allowed_pages = ['home', 'reports', 'settings', 'equipment_choice', 'unit', 'personnel','posting', 'single_equipment_entry', 'bulk_field_selection', 'bulk_equipment_entry', 'view_my_unit'];
 
 // Fallback to home if the requested page is not allowed
 if (!in_array($page, $allowed_pages)) {
