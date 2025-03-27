@@ -32,7 +32,7 @@ if (!in_array($page, $allowed_pages)) {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-3">
                 <li class="nav-item">
-                    <a class="nav-link <?php echo ($page == 'home') ? 'active' : ''; ?>" href="?page=home">Home</a>
+                    <a class="nav-link <?php echo ($page == 'home1') ? 'active' : ''; ?>" href="?page=home1">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($page == 'user_management') ? 'active' : ''; ?>" href="?page=user_management">User Management</a>
