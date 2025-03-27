@@ -59,10 +59,10 @@ $reporting_person_data = $reporting_person_stmt->fetch(PDO::FETCH_ASSOC);
 $reporting_person = $reporting_person_data ? $reporting_person_data['reporting_person'] : '';
 
 // 3️⃣ Fetch Post & Sub-Post from Database with proper filtering
-$posts_stmt = $pdo->query("SELECT post_id, name FROM post_types WHERE post_type = 'post' ORDER BY name");
+$posts_stmt = $pdo->query("SELECT posting_id, name FROM post_types WHERE post_type = 'post' ORDER BY name");
 $posts = $posts_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$sub_posts_stmt = $pdo->query("SELECT post_id AS sub_post_id, name FROM post_types WHERE post_type = 'subpost' ORDER BY name");
+$sub_posts_stmt = $pdo->query("SELECT posting_id AS sub_posting_id, name FROM post_types WHERE post_type = 'subpost' ORDER BY name");
 $sub_posts = $sub_posts_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 4️⃣ Fetch Employees for dropdown
@@ -183,13 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $show_form) {
     }
 </style>
 
-<?php if (!empty($message)): ?>
-<div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
-    <?php echo $message; ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<?php endif; ?>
-
 <h2 class="mb-4">Posting Management</h2>
   
 <?php if ($show_form): ?>
@@ -240,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $show_form) {
             <select class="form-select" id="post" name="post" required>
                 <option value="">Select Post</option>
                 <?php foreach ($posts as $post): ?>
-                <option value="<?php echo $post['post_id']; ?>"><?php echo htmlspecialchars($post['name']); ?></option>
+                <option value="<?php echo $post['posting_id']; ?>"><?php echo htmlspecialchars($post['name']); ?></option>
                 <?php endforeach; ?>
             </select>
             <div class="invalid-feedback">Please select a post.</div>
@@ -303,7 +296,7 @@ $(document).ready(function() {
                 // Reset and load sub-posts
                 subPostSelect.html('<option value="">Select Sub-Post</option>');
                 <?php foreach ($sub_posts as $sub_post): ?>
-                subPostSelect.append('<option value="<?php echo $sub_post['sub_post_id']; ?>"><?php echo addslashes(htmlspecialchars($sub_post['name'])); ?></option>');
+                subPostSelect.append('<option value="<?php echo $sub_post['sub_post']; ?>"><?php echo addslashes(htmlspecialchars($sub_post['name'])); ?></option>');
                 <?php endforeach; ?>
                 
                 // Add validation classes if form is already validated

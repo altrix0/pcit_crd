@@ -6,7 +6,7 @@ session_start();
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 
 // Whitelist of allowed pages to prevent unauthorized file access
-$allowed_pages = ['home', 'reports', 'settings', 'equipment', 'unit', 'personnel','posting'];
+$allowed_pages = ['home', 'reports', 'settings', 'equipment', 'unit', 'personnel','posting', 'view_my_unit'];
 
 // Fallback to home if the requested page is not allowed
 if (!in_array($page, $allowed_pages)) {
@@ -49,6 +49,7 @@ if (!in_array($page, $allowed_pages)) {
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($page == 'posting') ? 'active' : ''; ?>" href="?page=posting">Posting</a>
                 </li>
+
             </ul>
         </div>
 
@@ -70,7 +71,7 @@ if (!in_array($page, $allowed_pages)) {
 </nav>
 
 <!-- Main Content -->
-<div class="content p-4">
+<div class="content">
     <?php 
         // Dynamically load content from the corresponding file
         if (file_exists($page . '.php')) {
