@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Query for the user with the given sevarth_id
-            $stmt = $pdo->prepare('SELECT * FROM employee WHERE sevarth_id = :username LIMIT 1');
+            // Updated to explicitly select login_user_role
+            $stmt = $pdo->prepare('SELECT employee_id, sevarth_id, password_hash, login_user_role FROM employee WHERE sevarth_id = :username LIMIT 1');
             $stmt->execute(['username' => $username]);
             $user = $stmt->fetch();
             
@@ -34,8 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['sevarth_id'] = $user['sevarth_id'];
                 $_SESSION['user_role'] = $user['login_user_role'];
                 
-                // Redirect to dashboard
-                header('Location: dashboard.php');
+                // Redirect based on user role
+                if ($_SESSION['user_role'] == 6) {
+                    header('Location: admin_dashboard.php');
+                } else {
+                    header('Location: EndUser/dashboard.php');
+                }
                 exit;
             } else {
                 // Authentication failed

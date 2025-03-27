@@ -1,7 +1,9 @@
 <?php
 // Start session and include database connection
-session_start();
-require_once 'database.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once '../database.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

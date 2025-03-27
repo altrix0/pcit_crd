@@ -21,6 +21,25 @@ if (isset($_POST['calculate_retirement']) && isset($_POST['dob'])) {
     exit;
 }
 
+// Fetch roles from user_roles table
+$roles_stmt = $pdo->query("SELECT role_id, role_name FROM user_roles WHERE role_name != 'Administrator' ORDER BY role_id");
+$roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch reporting employees for dropdown, grouped by level
+$reporting_stmt = $pdo->prepare("
+    SELECT id, designation, department_location, level
+    FROM reporting_employees
+    ORDER BY level DESC, designation, department_location
+");
+$reporting_stmt->execute();
+$reporting_employees = $reporting_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Group reporting employees by level for better organization in dropdown
+$grouped_employees = [];
+foreach ($reporting_employees as $employee) {
+    $grouped_employees[$employee['level']][] = $employee;
+}
+
 // 3 & 7. Process OTP verification
 if (isset($_POST['send_otp'])) {
     // Generate a 6-digit random OTP
@@ -75,10 +94,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $mobile = preg_replace('/\D/', '', isset($_POST['mobile']) ? trim($_POST['mobile']) : ''); // Remove all non-digits
         $current_posting = isset($_POST['current_posting']) ? htmlspecialchars(trim($_POST['current_posting']), ENT_QUOTES, 'UTF-8') : '';
-        $reporting_person = isset($_POST['reporting_person']) ? htmlspecialchars(trim($_POST['reporting_person']), ENT_QUOTES, 'UTF-8') : '';
+        $reporting_person_id = filter_input(INPUT_POST, 'reporting_person', FILTER_VALIDATE_INT);
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
         $retirement_date = isset($_POST['retirement_date']) ? htmlspecialchars(trim($_POST['retirement_date']), ENT_QUOTES, 'UTF-8') : '';
+        $role_id = filter_input(INPUT_POST, 'role', FILTER_VALIDATE_INT);
+
+        // Remove code that converts reporting_person_id to designation string
+        // No need to get reporting person's name from ID since we'll store the ID directly
 
         // 8. Validate inputs
         $errors = [];
@@ -87,13 +110,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
         $required_fields = [
             'sevarth_id', 'first_name', 'last_name', 'dob', 'father_name',
             'mother_name', 'aadhar_number', 'email', 'mobile', 'current_posting',
-            'reporting_person', 'password', 'confirm_password', 'retirement_date'
+            'role', 'password', 'confirm_password', 'retirement_date'
         ];
         
         foreach ($required_fields as $field) {
-            if (empty($$field)) {
+            if (empty($$field) && $field != 'role') {  // Skip 'role' as it's handled differently
                 $errors[] = ucfirst(str_replace('_', ' ', $field)) . " is required";
             }
+        }
+
+        // Validate role
+        if (!$role_id) {
+            $errors[] = "Role selection is required";
+        }
+        
+        // Validate reporting person
+        if (!$reporting_person_id) {
+            $errors[] = "Reporting person selection is required";
         }
         
         // Validate email format
@@ -134,9 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                     // 9. Insert new user into database
                     $hash = password_hash($password, PASSWORD_DEFAULT);
                     
-                    // Set default role to End User (role_id 1)
-                    $default_role = 1;
-                    
+                    // Use the selected role_id instead of hardcoded value
+                    // Store reporting_person_id directly as an integer
                     $stmt = $pdo->prepare("
                         INSERT INTO employee (
                             sevarth_id, password_hash, first_name, last_name, 
@@ -150,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                         $sevarth_id, $hash, $first_name, $last_name, 
                         $father_name, $mother_name, $spouse_name, $dob,
                         $retirement_date, $mobile, $email, $aadhar_number, 
-                        $default_role, $reporting_person
+                        $role_id, $reporting_person_id // Pass reporting_person_id as integer directly
                     ]);
                     
                     // 10. Clear the session OTP data
@@ -200,15 +232,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Sevarth ID</label>
-                            <input type="text" class="form-control" name="sevarth_id" placeholder="Sevarth ID" required value="<?php echo isset($_POST['sevarth_id']) ? htmlspecialchars($_POST['sevarth_id']) : ''; ?>">
+                            <input type="text" class="form-control" name="sevarth_id" id="sevarth_id" placeholder="Sevarth ID" required value="<?php echo isset($_POST['sevarth_id']) ? htmlspecialchars($_POST['sevarth_id']) : ''; ?>">
+                            <div class="invalid-feedback">Please enter a valid Sevarth ID (numbers only)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" name="first_name" placeholder="First Name" required value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
+                            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" required value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
+                            <div class="invalid-feedback">Please enter a valid first name (alphabetic only)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" name="last_name" placeholder="Last Name" required value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
+                            <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" required value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
+                            <div class="invalid-feedback">Please enter a valid last name (alphabetic only)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Date of Birth</label>
@@ -220,15 +255,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Father's Name</label>
-                            <input type="text" class="form-control" name="father_name" placeholder="Father's Name" required value="<?php echo isset($_POST['father_name']) ? htmlspecialchars($_POST['father_name']) : ''; ?>">
+                            <input type="text" class="form-control" name="father_name" id="father_name" placeholder="Father's Name" required value="<?php echo isset($_POST['father_name']) ? htmlspecialchars($_POST['father_name']) : ''; ?>">
+                            <div class="invalid-feedback">Please enter a valid father's name (alphabetic characters and spaces only)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Mother's Name</label>
-                            <input type="text" class="form-control" name="mother_name" placeholder="Mother's Name" required value="<?php echo isset($_POST['mother_name']) ? htmlspecialchars($_POST['mother_name']) : ''; ?>">
+                            <input type="text" class="form-control" name="mother_name" id="mother_name" placeholder="Mother's Name" required value="<?php echo isset($_POST['mother_name']) ? htmlspecialchars($_POST['mother_name']) : ''; ?>">
+                            <div class="invalid-feedback">Please enter a valid mother's name (alphabetic characters and spaces only)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Spouse's Name (if applicable)</label>
-                            <input type="text" class="form-control" name="spouse_name" placeholder="Spouse's Name" value="<?php echo isset($_POST['spouse_name']) ? htmlspecialchars($_POST['spouse_name']) : ''; ?>">
+                            <input type="text" class="form-control" name="spouse_name" id="spouse_name" placeholder="Spouse's Name" value="<?php echo isset($_POST['spouse_name']) ? htmlspecialchars($_POST['spouse_name']) : ''; ?>">
+                            <div class="invalid-feedback">Please enter a valid spouse's name (alphabetic characters and spaces only)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Aadhar Number</label>
@@ -245,10 +283,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                             <input type="text" class="form-control" name="current_posting" placeholder="Current Posting" required value="<?php echo isset($_POST['current_posting']) ? htmlspecialchars($_POST['current_posting']) : ''; ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Reporting Person</label>
-                            <input type="text" class="form-control" name="reporting_person" placeholder="Reporting Person" required value="<?php echo isset($_POST['reporting_person']) ? htmlspecialchars($_POST['reporting_person']) : ''; ?>">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Select Role</option>
+                                <?php foreach ($roles as $role): ?>
+                                    <option value="<?= $role['role_id']; ?>"><?= htmlspecialchars($role['role_name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="invalid-feedback">Please select a role</div>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Reporting Person</label>
+                            <select class="form-select" id="reporting_person" name="reporting_person" required>
+                                <option value="">Select Reporting Person</option>
+                                <?php
+                                // Display options grouped by moderator level
+                                $level_labels = [
+                                    4 => 'Headquarters Level Moderators',
+                                    3 => 'Regional Level Moderators',
+                                    2 => 'District Level Moderators',
+                                ];
+                                
+                                foreach ([4, 3, 2] as $level) {
+                                    if (isset($grouped_employees[$level]) && !empty($grouped_employees[$level])) {
+                                        echo '<optgroup label="' . $level_labels[$level] . '">';
+                                        foreach ($grouped_employees[$level] as $employee) {
+                                            echo '<option value="' . $employee['id'] . '">' . 
+                                                 htmlspecialchars($employee['designation'] . ' - ' . $employee['department_location']) . 
+                                                 '</option>';
+                                        }
+                                        echo '</optgroup>';
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <div class="invalid-feedback">Please select a reporting person</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Mobile Number</label>
@@ -429,6 +498,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
             }
         });
 
+        // Add validation for role and reporting person fields
+        $('#role, #reporting_person').on('change', function() {
+            if ($(this).val()) {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+
         // Add form submission handler to validate password fields only when signing in
         $('#signupForm').on('submit', function(e) {
             // Only enforce password validation when the main submit button is clicked
@@ -444,7 +522,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                 let isValid = true;
                 
                 // Check all required fields
-                $(this).find('input[required]').each(function() {
+                $(this).find('input[required], select[required]').each(function() {
                     if (!$(this).val()) {
                         $(this).addClass('is-invalid');
                         isValid = false;
@@ -511,6 +589,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                         scrollTop: $('.is-invalid:first').offset().top - 100
                     }, 200);
                 }
+            }
+        });
+
+        // Live validation for Sevarth ID (numbers only)
+        $('#sevarth_id').on('input', function() {
+            // Get the input value
+            const value = $(this).val();
+            // Check if the value matches the pattern (numbers only)
+            const isValid = /^[0-9]+$/.test(value);
+            
+            // Apply appropriate validation class based on input
+            if (value === '') {
+                // Empty input - remove validation classes
+                $(this).removeClass('is-valid is-invalid');
+            } else if (isValid) {
+                // Valid input - add valid class, remove invalid class
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                // Invalid input - add invalid class, remove valid class
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+        
+        // Live validation for First Name and Last Name (alphabetic only)
+        $('#first_name, #last_name').on('input', function() {
+            // Get the input value
+            const value = $(this).val();
+            // Check if the value matches the pattern (alphabetic only)
+            const isValid = /^[A-Za-z]+$/.test(value);
+            
+            // Apply appropriate validation class based on input
+            if (value === '') {
+                // Empty input - remove validation classes
+                $(this).removeClass('is-valid is-invalid');
+            } else if (isValid) {
+                // Valid input - add valid class, remove invalid class
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                // Invalid input - add invalid class, remove valid class
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+        
+        // Live validation for Father's Name, Mother's Name, and Spouse's Name (alphabetic with spaces)
+        $('#father_name, #mother_name, #spouse_name').on('input', function() {
+            // Get the input value
+            const value = $(this).val();
+            // Check if the value matches the pattern (alphabetic with spaces)
+            const isValid = value === '' || /^[A-Za-z ]+$/.test(value);
+            
+            // Apply appropriate validation class based on input
+            if (value === '') {
+                // Empty input - remove validation classes if optional (spouse_name)
+                // or keep invalid if required (father_name, mother_name)
+                if ($(this).attr('id') === 'spouse_name') {
+                    $(this).removeClass('is-valid is-invalid');
+                } else {
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                }
+            } else if (isValid) {
+                // Valid input - add valid class, remove invalid class
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                // Invalid input - add invalid class, remove valid class
+                $(this).removeClass('is-valid').addClass('is-invalid');
             }
         });
     });
