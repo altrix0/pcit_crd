@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 16, 2025 at 02:07 PM
+-- Generation Time: Mar 27, 2025 at 02:43 PM
 -- Server version: 10.11.11-MariaDB
--- PHP Version: 8.3.15
+-- PHP Version: 8.3.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -23,6 +23,7 @@ USE `pcit_crd_db`;
 -- Table structure for table `deployment`
 --
 
+DROP TABLE IF EXISTS `deployment`;
 CREATE TABLE `deployment` (
   `deployment_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
@@ -49,6 +50,7 @@ INSERT INTO `deployment` (`deployment_id`, `name`, `deployment_type`, `height_of
 -- Table structure for table `employee`
 --
 
+DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `employee_id` int(11) NOT NULL,
   `sevarth_id` varchar(50) NOT NULL,
@@ -63,13 +65,38 @@ CREATE TABLE `employee` (
   `email_id` varchar(100) NOT NULL,
   `aadhar_number` varchar(12) NOT NULL,
   `retirement_date` date DEFAULT NULL,
-  `current_posting` int(11) DEFAULT NULL,
-  `login_user_role` int(11) DEFAULT NULL,
-  `reporting_person` varchar(50) DEFAULT NULL,
+  `current_posting` varchar(100) DEFAULT NULL,
+  `login_user_role` int(11) NOT NULL,
+  `reporting_person` int(11) NOT NULL,
   `verification_status` tinyint(1) DEFAULT 0,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `last_login` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ;
+
+--
+-- Dumping data for table `employee`
+--
+
+INSERT INTO `employee` (`employee_id`, `sevarth_id`, `password_hash`, `first_name`, `last_name`, `father_name`, `mother_name`, `spouse_name`, `dob`, `mobile_number`, `email_id`, `aadhar_number`, `retirement_date`, `current_posting`, `login_user_role`, `reporting_person`, `verification_status`, `created_at`, `last_login`) VALUES
+(17, '1', '$2y$10$x1iLWcTaCgASSZejDk3p/ulLrsQGHYlcAB3hq0POqmaVL5V4H5NV2', 's', 'd', 'd', 'd', 'd', '2000-10-10', '1111111111', 'd@d.c', '000000000000', '2058-10-10', NULL, 1, 1, 0, '2025-03-27 17:50:38', NULL);
+
+--
+-- Triggers `employee`
+--
+DROP TRIGGER IF EXISTS `after_employee_insert`;
+DELIMITER $$
+CREATE TRIGGER `after_employee_insert` AFTER INSERT ON `employee` FOR EACH ROW BEGIN
+    INSERT INTO personnel_info (
+        personnel_id, sevarth_id, first_name, last_name, father_name, mother_name, spouse_name,
+        dob, mobile_number, email_id, aadhar_number, retirement_date, reporting_person, current_posting
+    )
+    VALUES (
+        NEW.employee_id, NEW.sevarth_id, NEW.first_name, NEW.last_name, NEW.father_name, NEW.mother_name, NEW.spouse_name,
+        NEW.dob, NEW.mobile_number, NEW.email_id, NEW.aadhar_number, NEW.retirement_date, NEW.reporting_person, NEW.current_posting
+    );
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -77,6 +104,7 @@ CREATE TABLE `employee` (
 -- Table structure for table `equipment`
 --
 
+DROP TABLE IF EXISTS `equipment`;
 CREATE TABLE `equipment` (
   `equipment_id` int(11) NOT NULL,
   `pw_no` int(30) DEFAULT NULL,
@@ -101,6 +129,7 @@ CREATE TABLE `equipment` (
 -- Table structure for table `equipment_options`
 --
 
+DROP TABLE IF EXISTS `equipment_options`;
 CREATE TABLE `equipment_options` (
   `id` int(11) NOT NULL,
   `make` varchar(100) NOT NULL,
@@ -137,21 +166,10 @@ INSERT INTO `equipment_options` (`id`, `make`, `model`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `equipment_status`
---
-
-CREATE TABLE `equipment_status` (
-  `status_id` int(11) NOT NULL,
-  `status_name` varchar(50) NOT NULL,
-  `status_description` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `personnel_info`
 --
 
+DROP TABLE IF EXISTS `personnel_info`;
 CREATE TABLE `personnel_info` (
   `personnel_id` int(11) NOT NULL,
   `sevarth_id` varchar(50) NOT NULL,
@@ -165,14 +183,21 @@ CREATE TABLE `personnel_info` (
   `email_id` varchar(100) NOT NULL,
   `aadhar_number` varchar(12) NOT NULL,
   `retirement_date` date NOT NULL,
-  `current_posting` varchar(100) NOT NULL,
+  `current_posting` varchar(100) DEFAULT NULL,
   `reporting_person` varchar(50) NOT NULL,
-  `joining_unit_date` date NOT NULL,
+  `joining_unit_date` date DEFAULT NULL,
   `relieve_unit_date` date DEFAULT NULL,
-  `post` varchar(50) NOT NULL,
-  `sub_post` varchar(50) DEFAULT NULL,
-  `unit_id` int(11) NOT NULL
+  `post` int(11) DEFAULT NULL,
+  `sub_post` int(11) DEFAULT NULL,
+  `unit_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `personnel_info`
+--
+
+INSERT INTO `personnel_info` (`personnel_id`, `sevarth_id`, `first_name`, `last_name`, `father_name`, `mother_name`, `spouse_name`, `dob`, `mobile_number`, `email_id`, `aadhar_number`, `retirement_date`, `current_posting`, `reporting_person`, `joining_unit_date`, `relieve_unit_date`, `post`, `sub_post`, `unit_id`) VALUES
+(17, '1', 's', 'd', 'd', 'd', 'd', '2000-10-10', '1111111111', 'd@d.c', '000000000000', '2058-10-10', NULL, '1', NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -180,6 +205,7 @@ CREATE TABLE `personnel_info` (
 -- Table structure for table `posting`
 --
 
+DROP TABLE IF EXISTS `posting`;
 CREATE TABLE `posting` (
   `posting_id` int(11) NOT NULL,
   `employee_id` int(11) NOT NULL,
@@ -192,32 +218,47 @@ CREATE TABLE `posting` (
   `created_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+--
+-- Triggers `posting`
+--
+DROP TRIGGER IF EXISTS `after_posting_insert`;
+DELIMITER $$
+CREATE TRIGGER `after_posting_insert` AFTER INSERT ON `posting` FOR EACH ROW BEGIN
+    UPDATE personnel_info
+    SET
+        joining_unit_date = NEW.joining_unit_date,
+        relieve_unit_date = NEW.relieve_unit_date,
+        post = NEW.post,
+        sub_post = NEW.sub_post,
+        unit_id = NEW.unit_id
+    WHERE sevarth_id = (SELECT sevarth_id FROM employee WHERE employee_id = NEW.employee_id);
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `post_types`
 --
 
+DROP TABLE IF EXISTS `post_types`;
 CREATE TABLE `post_types` (
-  `post_id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `description` text DEFAULT NULL,
-  `post_type` enum('post','subpost') NOT NULL
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `post_types`
 --
 
-INSERT INTO `post_types` (`post_id`, `name`, `description`, `post_type`) VALUES
-(1, 'PI', 'Police Inspector', 'post'),
-(2, 'PSI', 'Police Sub-Inspector', 'post'),
-(3, 'ASI', 'Assistant Sub-Inspector', 'post'),
-(4, 'HC', 'Head Constable', 'post'),
-(5, 'Constable', 'Constable', 'post'),
-(6, 'RM', 'Radio Mechanic', 'subpost'),
-(7, 'Elect.', 'Electronics Technician', 'subpost'),
-(8, 'Operator', 'Radio Operator', 'subpost');
+INSERT INTO `post_types` (`id`, `name`) VALUES
+(2, 'ASI'),
+(6, 'Constable'),
+(5, 'DySP'),
+(1, 'HC'),
+(4, 'PI'),
+(3, 'PSI');
 
 -- --------------------------------------------------------
 
@@ -225,6 +266,7 @@ INSERT INTO `post_types` (`post_id`, `name`, `description`, `post_type`) VALUES
 -- Table structure for table `reporting_employees`
 --
 
+DROP TABLE IF EXISTS `reporting_employees`;
 CREATE TABLE `reporting_employees` (
   `id` int(11) NOT NULL,
   `designation` varchar(100) NOT NULL,
@@ -284,15 +326,43 @@ INSERT INTO `reporting_employees` (`id`, `designation`, `department_location`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sub_post_types`
+-- Table structure for table `subpost_types`
 --
 
-CREATE TABLE `sub_post_types` (
-  `sub_post_id` int(11) NOT NULL,
-  `post_id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `description` text DEFAULT NULL
+DROP TABLE IF EXISTS `subpost_types`;
+CREATE TABLE `subpost_types` (
+  `id` int(11) NOT NULL,
+  `post_type_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `subpost_types`
+--
+
+INSERT INTO `subpost_types` (`id`, `post_type_id`, `name`) VALUES
+(1, 1, 'Electrician'),
+(2, 1, 'Wireless Operator'),
+(3, 1, 'Workshop Hand'),
+(4, 1, 'Mast Laskar'),
+(5, 1, 'Carpenter'),
+(6, 1, 'Other'),
+(7, 2, 'Head Wireless Operator'),
+(8, 2, 'Radio Mechanic'),
+(9, 2, 'Store Man'),
+(10, 2, 'Electrician'),
+(11, 2, 'Drafts Man'),
+(12, 2, 'Sr. Technical Officer'),
+(13, 2, 'Jr. Technical Officer'),
+(14, 2, 'Other'),
+(15, 3, 'Electric'),
+(16, 3, 'Traffic'),
+(17, 3, 'Engineer'),
+(18, 4, 'Traffic'),
+(19, 4, 'Engineer'),
+(20, 5, 'Traffic'),
+(21, 5, 'Engineer'),
+(22, 6, 'Workshop Hand');
 
 -- --------------------------------------------------------
 
@@ -300,6 +370,7 @@ CREATE TABLE `sub_post_types` (
 -- Table structure for table `unit`
 --
 
+DROP TABLE IF EXISTS `unit`;
 CREATE TABLE `unit` (
   `unit_id` int(11) NOT NULL,
   `unit_name` varchar(100) NOT NULL,
@@ -314,12 +385,20 @@ CREATE TABLE `unit` (
   `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+--
+-- Dumping data for table `unit`
+--
+
+INSERT INTO `unit` (`unit_id`, `unit_name`, `unit_code`, `latitude`, `longitude`, `unit_photo`, `unit_description`, `created_at`, `last_updated`, `unit_incharge`, `created_by`) VALUES
+(15, 'testunit', '1', 1.00000000, 1.00000000, 'unit_67e590137afd0_school_id.jpg', 'testdesc', '2025-03-27 17:51:15', NULL, 6, 17);
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `user_roles`
 --
 
+DROP TABLE IF EXISTS `user_roles`;
 CREATE TABLE `user_roles` (
   `role_id` int(11) NOT NULL,
   `role_name` varchar(50) NOT NULL,
@@ -333,11 +412,12 @@ CREATE TABLE `user_roles` (
 
 INSERT INTO `user_roles` (`role_id`, `role_name`, `access_level`, `description`) VALUES
 (1, 'End User', 1, 'Basic unit-level data entry personnel'),
-(2, 'Moderator Level 1', 2, 'Unit-level moderator with limited verification privileges'),
-(3, 'Moderator Level 2', 3, 'District-level moderator for verification and consolidation'),
-(4, 'Moderator Level 3', 4, 'Regional moderator for broader oversight'),
-(5, 'Moderator Level 4', 5, 'Headquarters-level moderator for final approval'),
-(6, 'Administrator', 10, 'Full system access');
+(2, 'Posting Operator', 1, 'Manages personnel posting details.'),
+(3, 'Moderator Level 1', 2, 'Unit-level moderator with limited verification privileges'),
+(4, 'Moderator Level 2', 3, 'District-level moderator for verification and consolidation'),
+(5, 'Moderator Level 3', 4, 'Regional moderator for broader oversight'),
+(6, 'Moderator Level 4', 5, 'Headquarters-level moderator for final approval'),
+(7, 'Administrator', 10, 'Full system access');
 
 --
 -- Indexes for dumped tables
@@ -356,7 +436,8 @@ ALTER TABLE `employee`
   ADD PRIMARY KEY (`employee_id`),
   ADD UNIQUE KEY `sevarth_id` (`sevarth_id`),
   ADD UNIQUE KEY `email_id` (`email_id`),
-  ADD KEY `fk_employee_role` (`login_user_role`);
+  ADD KEY `fk_employee_role` (`login_user_role`),
+  ADD KEY `fk_reporting_person` (`reporting_person`);
 
 --
 -- Indexes for table `equipment`
@@ -375,18 +456,14 @@ ALTER TABLE `equipment_options`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `equipment_status`
---
-ALTER TABLE `equipment_status`
-  ADD PRIMARY KEY (`status_id`);
-
---
 -- Indexes for table `personnel_info`
 --
 ALTER TABLE `personnel_info`
   ADD PRIMARY KEY (`personnel_id`),
   ADD UNIQUE KEY `sevarth_id` (`sevarth_id`),
-  ADD KEY `fk_personnel_unit` (`unit_id`);
+  ADD KEY `fk_personnel_unit` (`unit_id`),
+  ADD KEY `fk_personnel_post` (`post`),
+  ADD KEY `fk_personnel_subpost` (`sub_post`);
 
 --
 -- Indexes for table `posting`
@@ -395,15 +472,16 @@ ALTER TABLE `posting`
   ADD PRIMARY KEY (`posting_id`),
   ADD KEY `fk_posting_employee` (`employee_id`),
   ADD KEY `fk_posting_unit` (`unit_id`),
+  ADD KEY `fk_posting_created_by` (`created_by`),
   ADD KEY `fk_posting_post` (`post`),
-  ADD KEY `fk_posting_sub_post` (`sub_post`),
-  ADD KEY `fk_posting_created_by` (`created_by`);
+  ADD KEY `fk_posting_subpost` (`sub_post`);
 
 --
 -- Indexes for table `post_types`
 --
 ALTER TABLE `post_types`
-  ADD PRIMARY KEY (`post_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `reporting_employees`
@@ -412,11 +490,11 @@ ALTER TABLE `reporting_employees`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `sub_post_types`
+-- Indexes for table `subpost_types`
 --
-ALTER TABLE `sub_post_types`
-  ADD PRIMARY KEY (`sub_post_id`),
-  ADD KEY `fk_sub_post_post` (`post_id`);
+ALTER TABLE `subpost_types`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `post_type_id` (`post_type_id`);
 
 --
 -- Indexes for table `unit`
@@ -447,13 +525,13 @@ ALTER TABLE `deployment`
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `equipment`
 --
 ALTER TABLE `equipment`
-  MODIFY `equipment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `equipment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `equipment_options`
@@ -462,28 +540,22 @@ ALTER TABLE `equipment_options`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `equipment_status`
---
-ALTER TABLE `equipment_status`
-  MODIFY `status_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `personnel_info`
 --
 ALTER TABLE `personnel_info`
-  MODIFY `personnel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `personnel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `posting`
 --
 ALTER TABLE `posting`
-  MODIFY `posting_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `posting_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `post_types`
 --
 ALTER TABLE `post_types`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `reporting_employees`
@@ -492,22 +564,22 @@ ALTER TABLE `reporting_employees`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
--- AUTO_INCREMENT for table `sub_post_types`
+-- AUTO_INCREMENT for table `subpost_types`
 --
-ALTER TABLE `sub_post_types`
-  MODIFY `sub_post_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `subpost_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `unit`
 --
 ALTER TABLE `unit`
-  MODIFY `unit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `unit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `user_roles`
 --
 ALTER TABLE `user_roles`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -517,7 +589,8 @@ ALTER TABLE `user_roles`
 -- Constraints for table `employee`
 --
 ALTER TABLE `employee`
-  ADD CONSTRAINT `fk_employee_role` FOREIGN KEY (`login_user_role`) REFERENCES `user_roles` (`role_id`);
+  ADD CONSTRAINT `fk_employee_role` FOREIGN KEY (`login_user_role`) REFERENCES `user_roles` (`role_id`),
+  ADD CONSTRAINT `fk_reporting_person` FOREIGN KEY (`reporting_person`) REFERENCES `reporting_employees` (`id`);
 
 --
 -- Constraints for table `equipment`
@@ -531,6 +604,8 @@ ALTER TABLE `equipment`
 -- Constraints for table `personnel_info`
 --
 ALTER TABLE `personnel_info`
+  ADD CONSTRAINT `fk_personnel_post` FOREIGN KEY (`post`) REFERENCES `post_types` (`id`),
+  ADD CONSTRAINT `fk_personnel_subpost` FOREIGN KEY (`sub_post`) REFERENCES `post_types` (`id`),
   ADD CONSTRAINT `fk_personnel_unit` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`unit_id`);
 
 --
@@ -539,15 +614,13 @@ ALTER TABLE `personnel_info`
 ALTER TABLE `posting`
   ADD CONSTRAINT `fk_posting_created_by` FOREIGN KEY (`created_by`) REFERENCES `employee` (`employee_id`),
   ADD CONSTRAINT `fk_posting_employee` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`employee_id`),
-  ADD CONSTRAINT `fk_posting_post` FOREIGN KEY (`post`) REFERENCES `post_types` (`post_id`),
-  ADD CONSTRAINT `fk_posting_sub_post` FOREIGN KEY (`sub_post`) REFERENCES `sub_post_types` (`sub_post_id`),
   ADD CONSTRAINT `fk_posting_unit` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`unit_id`);
 
 --
--- Constraints for table `sub_post_types`
+-- Constraints for table `subpost_types`
 --
-ALTER TABLE `sub_post_types`
-  ADD CONSTRAINT `fk_sub_post_post` FOREIGN KEY (`post_id`) REFERENCES `post_types` (`post_id`);
+ALTER TABLE `subpost_types`
+  ADD CONSTRAINT `subpost_types_ibfk_1` FOREIGN KEY (`post_type_id`) REFERENCES `post_types` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `unit`
